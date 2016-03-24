@@ -7,48 +7,50 @@
 
 'use strict';
 
-import * as file_utils from '../lib/file';
+var _libFile = require('../lib/file');
 
-const MAX_SELECTORS = 4095,
-      WARN_PERCENT = 0.98,
-      OVERWRITE_ERROR = 'The destination is the same as the source for file ',
-      OVERWRITE_EXCEPTION = 'Cowardly refusing to overwrite the source file.',
-      DEFAULT_SUFFIX = '';
+var file_utils = _libFile;
 
-module.exports = function(grunt) {
+var MAX_SELECTORS = 4095,
+    WARN_PERCENT = 0.98,
+    OVERWRITE_ERROR = 'The destination is the same as the source for file ',
+    OVERWRITE_EXCEPTION = 'Cowardly refusing to overwrite the source file.',
+    DEFAULT_SUFFIX = '';
+
+module.exports = function (grunt) {
 	var path = require('path'),
-	 	async = require('async'),
-		bless = require('bless'),
-		util = require('util'),
-		chalk = require('chalk');
+	    async = require('async'),
+	    bless = require('bless'),
+	    util = require('util'),
+	    chalk = require('chalk');
 
-	grunt.registerMultiTask('bless', 'Split CSS files suitable for IE', function() {
+	grunt.registerMultiTask('bless', 'Split CSS files suitable for IE', function () {
 
 		// Taking list of files with write destination or list without dest
 		var files = this.files,
-			fileList = files.length === 1 && !files[0].dest ? files[0].src : files,
-			options = this.options({
-				compress: false,
-				logCount: false,
-				force: grunt.option('force') || false,
-				warnLimit: Math.floor(MAX_SELECTORS * WARN_PERCENT),
-				imports: true,
-				failOnLimit: false,
-				suffix: DEFAULT_SUFFIX,
-				sourceMaps: false,
-                root:''
-			});
+		    fileList = files.length === 1 && !files[0].dest ? files[0].src : files,
+		    options = this.options({
+			compress: false,
+			logCount: false,
+			force: grunt.option('force') || false,
+			warnLimit: Math.floor(MAX_SELECTORS * WARN_PERCENT),
+			imports: true,
+			failOnLimit: false,
+			suffix: DEFAULT_SUFFIX,
+			sourceMaps: false,
+			root: ''
+		});
 
 		//grunt.log.writeflags(options, 'options');
 
 		async.each(fileList, function (inputFile, next) {
 			var writeFiles = !!inputFile.dest,
-				output_filename_orig = inputFile.dest || inputFile,
-				outPutfileName = file_utils.strip_extension(output_filename_orig),
-				limit = MAX_SELECTORS,
-				suffix = options.suffix,
-				data = '',
-				parse_result;
+			    output_filename_orig = inputFile.dest || inputFile,
+			    outPutfileName = file_utils.strip_extension(output_filename_orig),
+			    limit = MAX_SELECTORS,
+			    suffix = options.suffix,
+			    data = '',
+			    parse_result;
 
 			// If we are not forcing the build refuse to overwrite the
 			// source file.
@@ -69,8 +71,8 @@ module.exports = function(grunt) {
 			var numSelectors = parse_result.totalSelectorCount;
 
 			if (options.logCount) {
-				let overLimit = numSelectors > limit,
-					_numSelectors = chalk.green(numSelectors);
+				var overLimit = numSelectors > limit,
+				    _numSelectors = chalk.green(numSelectors);
 
 				if (overLimit) {
 					_numSelectors = chalk.red(numSelectors);
@@ -78,10 +80,10 @@ module.exports = function(grunt) {
 					_numSelectors = chalk.yellow(numSelectors);
 				}
 
-				let countMsg = `${ path.basename(outPutfileName) } has ${ _numSelectors } CSS selectors.`;
+				var countMsg = path.basename(outPutfileName) + ' has ' + _numSelectors + ' CSS selectors.';
 
 				if (overLimit) {
-					let overLimitErrorMessage = `${ countMsg } IE8-9 will read only first ${ limit }!`;
+					var overLimitErrorMessage = countMsg + ' IE8-9 will read only first ' + limit + '!';
 
 					grunt.log.errorlns(overLimitErrorMessage);
 
@@ -95,7 +97,7 @@ module.exports = function(grunt) {
 
 			// write processed file(s)
 			var filesLength = parse_result.data.length;
-			var is_modified = (filesLength > 1);
+			var is_modified = filesLength > 1;
 
 			// print log message
 			var msg = 'Found ' + numSelectors + ' selector';
@@ -115,58 +117,57 @@ module.exports = function(grunt) {
 			grunt.log.verbose.writeln(msg);
 
 			if (writeFiles) {
-				// This header will only be shown on the main file
-				let header = '',
-					has_sourcemaps = parse_result.maps && parse_result.maps.length,
-					main_file = filesLength - 1,
-					writeCount = 0;
+				(function () {
+					// This header will only be shown on the main file
+					var header = '',
+					    has_sourcemaps = parse_result.maps && parse_result.maps.length,
+					    main_file = filesLength - 1,
+					    writeCount = 0;
 
-				if (options.banner) {
-					header += options.banner + grunt.util.linefeed;
-				}
+					if (options.banner) {
+						header += options.banner + grunt.util.linefeed;
+					}
 
-				if (options.imports) {
 					header += file_utils.imports({
 						numFiles: filesLength,
 						output: outPutfileName,
 						suffix: suffix,
-						linefeed: (options.compress ? '' : grunt.util.linefeed),
+						linefeed: options.compress ? '' : grunt.util.linefeed,
 						root: options.root
 					});
 
 					header += grunt.util.linefeed;
-				}
 
-				// The main file is always the last one in the array.
-				// So add the header here before we iterate.
-				parse_result.data[main_file] = header + parse_result.data[main_file];
+					// The main file is always the last one in the array.
+					// So add the header here before we iterate.
+					parse_result.data[main_file] = header + parse_result.data[main_file];
 
-				// Iterate the files and write them out.
-				parse_result.data.forEach(function (file, index) {
-					// the files are listed with the main file being the
-					// last do some calculations to get the proper index.
-					var nth_file = main_file - index,
+					// Iterate the files and write them out.
+					parse_result.data.forEach(function (file, index) {
+						// the files are listed with the main file being the
+						// last do some calculations to get the proper index.
+						var nth_file = main_file - index,
+						   
 
 						// build the filenames
 						filename = file_utils.name(outPutfileName, nth_file, suffix, file_utils.EXTENSION),
-						mapname = file_utils.name(outPutfileName, nth_file, suffix, file_utils.SOURCEMAP_EXTENSION);
+						    mapname = file_utils.name(outPutfileName, nth_file, suffix, file_utils.SOURCEMAP_EXTENSION);
 
-					grunt.file.write(filename, file);
+						grunt.file.write(filename, file);
 
-					if (has_sourcemaps) {
-						grunt.file.write(mapname, JSON.stringify(parse_result.maps[index]));
-					}
+						if (has_sourcemaps) {
+							grunt.file.write(mapname, JSON.stringify(parse_result.maps[index]));
+						}
 
-					writeCount++;
+						writeCount++;
 
-					if (is_modified) {
-						var lastSentence = filesLength === writeCount ? 'modified' : 'created';
+						if (is_modified) {
+							var lastSentence = filesLength === writeCount ? 'modified' : 'created';
 
-						grunt.log.writeln(`File ${ chalk.cyan(filename) } ${ lastSentence }.`);
-					}
-
-				});
-
+							grunt.log.writeln('File ' + chalk.cyan(filename) + ' ' + lastSentence + '.');
+						}
+					});
+				})();
 			}
 
 			next();
