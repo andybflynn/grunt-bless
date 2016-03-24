@@ -2,7 +2,7 @@
   "name": "grunt-bless",
   "description": "Split CSS files suitable for IE",
   "version": "1.0.2",
-  "homepage": "https://github.com/Ponginae/grunt-bless",
+  "homepage": "https://github.com/andybflynn/grunt-bless",
   "author": {
     "name": "Aki Alexandra Nofftz",
     "email": "aki@nofftz.name"
@@ -19,15 +19,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ponginae/grunt-bless"
+    "url": "https://github.com/andybflynn/grunt-bless"
   },
   "bugs": {
-    "url": "https://github.com/Ponginae/grunt-bless/issues"
+    "url": "https://github.com/andybflynn/grunt-bless/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/Ponginae/grunt-bless/blob/master/LICENSE-MIT"
+      "url": "https://github.com/andybflynn/grunt-bless/blob/master/LICENSE-MIT"
     }
   ],
   "main": "Gruntfile.js",
