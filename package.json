@@ -1,5 +1,5 @@
 {
-  "name": "flynn-grunt-bless",
+  "name": "grunt-bless",
   "description": "Split CSS files suitable for IE",
   "version": "1.0.7",
   "homepage": "https://github.com/andybflynn/grunt-bless",
