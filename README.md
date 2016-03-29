@@ -219,7 +219,10 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 Release History
 ---------------
-
+- **1.1.0**
+	- Removed ignored folders from .gitignore and .npmignore. If the folders are in the .npmignore file they won't be downloaded with npm install.
+- **1.0.2 - 1.0.9**
+	- Nonsense where we tried to figure out why installing from github wasn't working
 - **1.0.1**
 	- add babel-runtime to add support for older versions of node
 	- add continous integration
