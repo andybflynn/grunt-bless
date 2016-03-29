@@ -10,4 +10,4 @@ npm-debug.log
 
 # grunt-bless files
 /test/tmp
-/src
+#/src
